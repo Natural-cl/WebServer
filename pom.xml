@@ -9,6 +9,11 @@
         <module>V2</module>
         <module>V3</module>
         <module>V4</module>
+        <module>V5</module>
+        <module>V5</module>
+        <module>untitled</module>
+        <module>v6</module>
+        <module>TEXT</module>
     </modules>
     <properties>
         <!-- 设置 JDK 版本为 1.8 -->
