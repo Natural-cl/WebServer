@@ -1,6 +1,7 @@
 package com.webserver.core;
 
 import com.webserver.http.HttpRequest;
+import com.webserver.http.HttpResponse;
 
 import java.io.*;
 import java.net.Socket;
@@ -24,6 +25,7 @@ public class ClientHandler implements Runnable{
         try{
             //1解析请求
             HttpRequest request = new HttpRequest(socket);
+            HttpResponse response =new HttpResponse(socket);
 
             //2处理请求
             //首先通过request获取请求中的抽象路径
@@ -33,60 +35,18 @@ public class ClientHandler implements Runnable{
             //若该资源存在并且是一个文件，则正常响应
             if(file.exists()&&file.isFile()) {
                 System.out.println("该资源已存在!");
-                   /*
-                    一个响应的大致内容:
-                    HTTP/1.1 200 OK(CRLF)
-                    Content-Type: text/html(CRLF)
-                    Content-Length: 2546(CRLF)(CRLF)
-                    1011101010101010101......
-                 */
-                OutputStream out = socket.getOutputStream();
-                //1:发送状态行
-
-
-                //2:发送响应头
-
-
-                //3:发送响应正文(文件内容)
-
-
+                response.setEntity(file);
             }else {
                 System.out.println("该资源不存在!");
                 File notFoundPage = new File("./webapps/root/404.html");
-                OutputStream out = socket.getOutputStream();
-                //1:发送状态行
-                String line = "HTTP/1.1 404 NotFound";
-                byte[] data = line.getBytes("ISO8859-1");
-                out.write(data);
-                out.write(13);//单独发送回车符
-                out.write(10);//单独发送换行符
-
-                //2:发送响应头
-                line = "Content-Type: text/html";
-                data = line.getBytes("ISO8859-1");
-                out.write(data);
-                out.write(13);//单独发送回车符
-                out.write(10);//单独发送换行符
-
-                line = "Content-Length: " + notFoundPage.length();
-                data = line.getBytes("ISO8859-1");
-                out.write(data);
-                out.write(13);//单独发送回车符
-                out.write(10);//单独发送换行符
-
-                //单独发送CRLF表示响应头部分发送完毕!
-                out.write(13);//单独发送回车符
-                out.write(10);//单独发送换行符
-
-                //3:发送响应正文(文件内容)
-                FileInputStream fis = new FileInputStream(notFoundPage);
-                int len;//每次读取的字节数
-                byte[] buf = new byte[1024*10];//10kb字节数组
-                while((len = fis.read(buf))!=-1){
-                    out.write(buf,0,len);
-                }
+                response.setStatusCode(404);
+                response.setStatusReason("NotFound");
+                response.setEntity(notFoundPage);
             }
             System.out.println("响应发送完毕!");
+            response.flush();
+
+            //3发送响应
         }catch(Exception e){
             e.printStackTrace();
         }finally{

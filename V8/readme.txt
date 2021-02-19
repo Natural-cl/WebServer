@@ -7,3 +7,7 @@
 1:在com.webserver.http包中新建一个类:HttpResponse,响应对象
 2:在HttpResponse中定义一个方法flush,用于将当前响应对象内容以标准的响应格式发送给客户端.
 3:将ClientHandler中发送响应的细节操作移动到响应对象中,并改为调用flush方法完成发送响应.
+
+重构完毕后,服务端已经按照HTTP协议完成了一问一答的完整交互.因此我们可以重复多次接收客户端的连接了
+所以修改com.webserver.core.WebServer类,将start方法中接收客户端连接并启动线程处理的操作加上
+一个死循环即可.
