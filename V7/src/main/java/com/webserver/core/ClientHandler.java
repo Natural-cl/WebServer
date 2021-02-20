@@ -19,7 +19,6 @@ public class ClientHandler implements Runnable{
     public ClientHandler(Socket socket){
         this.socket = socket;
     }
-
     public void run() {
         try{
             //1解析请求
